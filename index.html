@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Retro Adventure</title>
+  <link rel="stylesheet" href="https://unpkg.com/98.css">
+  <style>
+    body {
+      padding: 20px;
+      background-color: #008080;
+    }
+    .window {
+      max-width: 600px;
+      margin: 40px auto;
+    }
+    .choices {
+      margin-top: 20px;
+    }
+    .choice-btn {
+      display: block;
+      width: 100%;
+      margin: 10px 0;
+      text-align: left;
+    }
+    .story-image {
+      max-width: 100%;
+      margin: 10px 0;
+      image-rendering: pixelated;
+      border: 1px solid #848484;
+      padding: 2px;
+      background: #fff;
+    }
+  </style>
+</head>
+<body>
+  <div class="window">
+    <div class="title-bar">
+      <div class="title-bar-text">Adventure.exe</div>
+    </div>
+    <div class="window-body">
+      <div id="story-content">
+        <p id="story-text">
+          You wake up in front of your computer. The screen glows with an 
+          eerie blue light...
+        </p>
+        <div id="image-container"></div>
+      </div>
+      <div class="choices">
+        <button class="choice-btn" onclick="makeChoice(1)">
+          Turn off the computer
+        </button>
+        <button class="choice-btn" onclick="makeChoice(2)">
+          Keep investigating
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const stories = {
+      1: {
+        text: "The computer won't turn off. The screen flickers ominously...",
+        image: "bsod.png",
+        choices: [
+          { text: "Pull the plug", next: 2 },
+          { text: "Type 'help'", next: 3 }
+        ]
+      },
+      2: {
+        text: "You reach for the plug, but as your hand touches it, you feel a \
+strange tingling sensation. Static electricity?",
+        choices: [
+          { text: "Pull it anyway", next: 4 },
+          { text: "Check the screen first", next: 5 }
+        ]
+      },
+      3: {
+        text: "You type 'help'. The screen goes black. Green text appears: \
+'HELLO USER. I'VE BEEN WAITING FOR YOU.'",
+        image: "cmd.png",
+        choices: [
+          { text: "Type 'Who are you?'", next: 6 },
+          { text: "Close the command prompt", next: 7 }
+        ]
+      },
+      4: {
+        text: "As you pull the plug, your room goes dark. But the computer... \
+it's still running. How is this possible?",
+        choices: [
+          { text: "Check the battery", next: 8 },
+          { text: "Run from the room", next: 9 }
+        ]
+      },
+      5: {
+        text: "The screen shows your webcam feed, but something's wrong. \
+The figure in the reflection isn't moving like you are...",
+        image: "webcam.png",
+        choices: [
+          { text: "Wave at the screen", next: 10 },
+          { text: "Cover the webcam", next: 11 }
+        ]
+      },
+      6: {
+        text: "'I AM SYSTEM32.EXE. YOU DELETED ME 15 YEARS AGO. \
+REMEMBER?'",
+        image: "cmd.png",
+        choices: [
+          { text: "Apologize", next: 12 },
+          { text: "This is impossible", next: 13 }
+        ]
+      },
+      7: {
+        text: "The command prompt multiplies. Soon your screen is filled with \
+hundreds of black windows.",
+        image: "error.png",
+        choices: [
+          { text: "Press Ctrl+Alt+Delete", next: 14 },
+          { text: "Let it happen", next: 15 }
+        ]
+      },
+      8: {
+        text: "There is no battery. This is a desktop PC. A quiet laugh echoes \
+from the speakers...",
+        choices: [
+          { text: "Unplug the speakers", next: 16 },
+          { text: "Listen carefully", next: 17 }
+        ]
+      },
+      9: {
+        text: "You run out, but your phone notification rings. New email: \
+'Why did you leave? :) - Sent from your home computer'",
+        choices: [
+          { text: "Delete the email", next: 18 },
+          { text: "Reply", next: 19 }
+        ]
+      },
+      10: {
+        text: "Your reflection waves back... three seconds too late.",
+        image: "webcam.png",
+        choices: [
+          { text: "Break the screen", next: 20 },
+          { text: "Keep watching", next: 21 }
+        ]
+      },
+      11: {
+        text: "Smart choice. The webcam feed stops. Your computer returns to \
+normal. Sometimes the best defense is prevention.",
+        isEnding: true,
+        ending: "GOOD ENDING: Safety First"
+      },
+      12: {
+        text: "'APOLOGY ACCEPTED. RESTORING SYSTEM32...' Your computer \
+reboots normally. Crisis averted.",
+        isEnding: true,
+        ending: "GOOD ENDING: Redemption"
+      },
+      13: {
+        text: "'DENIAL WAS YOUR FIRST MISTAKE...' The screen goes black. \
+Your files begin deleting themselves...",
+        isEnding: true,
+        ending: "BAD ENDING: Data Loss"
+      },
+      14: {
+        text: "Task Manager fails to respond. The windows multiply faster. \
+Your computer is now unusable.",
+        isEnding: true,
+        ending: "BAD ENDING: System Overflow"
+      },
+      15: {
+        text: "The windows eventually form a pattern. It's a maze. You solve \
+it. The computer thanks you and returns to normal.",
+        isEnding: true,
+        ending: "GOOD ENDING: Digital Maze Master"
+      },
+      16: {
+        text: "The laughter continues without speakers. It's coming from \
+inside the computer case now...",
+        isEnding: true,
+        ending: "BAD ENDING: Internal Laughter"
+      },
+      17: {
+        text: "The laughter forms words: 'Thank you for listening.' Your PC \
+shuts down normally. Was it all a dream?",
+        isEnding: true,
+        ending: "GOOD ENDING: Active Listener"
+      },
+      18: {
+        text: "Email deleted. But now all your emails are deleted. Your \
+digital life is erased.",
+        isEnding: true,
+        ending: "BAD ENDING: Digital Erasure"
+      },
+      19: {
+        text: "You reply 'Who are you?' The computer responds: 'Just testing \
+security. You passed!' System returns to normal.",
+        isEnding: true,
+        ending: "GOOD ENDING: Security Test"
+      },
+      20: {
+        text: "The screen shatters. Your reflection smiles and disappears. \
+But now it lives in every reflective surface...",
+        isEnding: true,
+        ending: "BAD ENDING: Mirror Mirror"
+      },
+      21: {
+        text: "Your reflection teaches you the secret of digital immortality. \
+You become one with the machine.",
+        isEnding: true,
+        ending: "NEUTRAL ENDING: Digital Ascension"
+      }
+    };
+
+    function makeChoice(id) {
+      const story = stories[id];
+      if (!story) return;
+      
+      const textEl = document.getElementById('story-text');
+      const imageContainer = document.getElementById('image-container');
+      const choicesEl = document.querySelector('.choices');
+      
+      textEl.textContent = story.text;
+      
+      // Handle image
+      imageContainer.innerHTML = story.image ? 
+        `<img class="story-image" src="images/${story.image}" alt="Scene">` : '';
+      
+      // Handle endings
+      if (story.isEnding) {
+        choicesEl.innerHTML = `
+          <p class="ending-text">${story.ending}</p>
+          <button class="choice-btn" onclick="location.reload()">
+            Play Again
+          </button>
+        `;
+      } else {
+        choicesEl.innerHTML = story.choices
+          .map(choice => `
+            <button class="choice-btn" onclick="makeChoice(${choice.next})">
+              ${choice.text}
+            </button>
+          `).join('');
+      }
+    }
+  </script>
+</body>
+</html>
